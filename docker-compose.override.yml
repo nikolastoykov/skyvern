@@ -1,0 +1,6 @@
+services:
+  skyvern:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nikolastoykov/skyvern-local:latest
