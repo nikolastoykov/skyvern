@@ -17,6 +17,9 @@ RUN pip install --upgrade pip setuptools wheel
 # pyproject overrides that loosen litellm's jsonschema==4.23.0 pin.
 # Letting pip re-resolve here would re-introduce that conflict.
 RUN pip install --no-cache-dir --no-deps -r requirements.txt
+# Personal fork compatibility pin. This used to be installed manually in the
+# running container; keeping it in the image makes container recreation safe.
+RUN pip install --no-cache-dir --upgrade "openai==2.44.0"
 RUN playwright install-deps
 RUN playwright install
 RUN apt-get update && \
@@ -48,6 +51,10 @@ RUN npm install -g @bitwarden/cli@2025.9.0
 RUN bw --version
 
 COPY . /app
+
+# Apply the personal fork patches during image build so they survive every
+# docker compose down/up, container recreate and machine reboot.
+RUN python /app/scripts/nikola_runtime_patches.py
 
 ENV PYTHONPATH="/app"
 ENV VIDEO_PATH=/data/videos
